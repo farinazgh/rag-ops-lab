@@ -96,6 +96,8 @@ def chunk_sections_recursively(
         chunk_overlap=chunk_overlap,
     )
     chunks = text_splitter.split_documents(section_docs)
+    print("********* chunk_sections_recursively *********")
+
     return chunks
 
 
@@ -127,15 +129,15 @@ def preview_chunks(chunks, idx: int):
 
     content = chunks[idx].page_content
     print(f"\n--- Chunk[{idx}] preview ---")
-    print(f"Length: {len(content)} chars")
-    print("\nFirst 200 chars:\n", content[:200])
-    print("\nLast 200 chars:\n", content[-200:])
-    print("--- end preview ---\n")
+    print(f" --> Length: {len(content)} chars")
+    print("\n --> First 200 chars:\n", content[:200])
+    print("\n --> Last 200 chars:\n", content[-200:])
+    print("------------ end preview ------------\n")
 
 
 def main():
-    # 1) Load HTML
     html_docs = load_html(URL)
+    # one URL; one document
     html_doc = html_docs[0]
     print(f"Loaded HTML from: {URL}")
     print(f"Raw page_content length: {len(html_doc.page_content)} chars")
@@ -143,6 +145,7 @@ def main():
     # 2) Split HTML into sections
     section_docs = split_html_into_sections(html_doc, SECTIONS_TO_SPLIT_ON)
     print(f"\nNumber of HTML sections created: {len(section_docs)}")
+    print("*" * 60)
 
     # 3) Chunk sections recursively
     final_chunks = chunk_sections_recursively(
@@ -152,6 +155,7 @@ def main():
         separators=SEPARATORS,
     )
     print(f"Number of final chunks created (recursive): {len(final_chunks)}")
+    print("*" * 60)
 
     # Preview
     preview_chunks(final_chunks, PREVIEW_INDEX)
@@ -165,6 +169,8 @@ def main():
             separator="\n",
         )
         print(f"\n[Compare] Number of simple CharacterTextSplitter chunks: {len(simple_chunks)}")
+        print("*" * 60)
+
         preview_chunks(simple_chunks, PREVIEW_INDEX)
 
 
