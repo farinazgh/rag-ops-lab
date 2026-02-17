@@ -1,0 +1,11 @@
+{
+  "url": "https://en.wikipedia.org/wiki/2023_Cricket_World_Cup",
+  "embed_model": "text-embedding-3-small",
+  "embed_dim": 1536,
+  "embed_source": "final",
+  "chunk_size": 1000,
+  "chunk_overlap": 100,
+  "num_sections": 233,
+  "num_final_chunks": 280,
+  "num_simple_chunks": 603
+}
