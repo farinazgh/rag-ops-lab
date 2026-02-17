@@ -1,7 +1,5 @@
 # rag-ops-lab
 
-# rag-ops-lab
-
 A minimal setup for experimenting with RAG (Retrieval-Augmented Generation) using LangChain and OpenAI.
 
 ---
