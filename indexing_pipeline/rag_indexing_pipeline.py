@@ -7,11 +7,6 @@ What it does:
 - Chunks those sections with RecursiveCharacterTextSplitter
 - Optionally runs CharacterTextSplitter on the raw page content for comparison
 
-Run:
-    pip install langchain
-    pip install langchain-community
-    pip install langchain-text-splitters
-
     python rag_indexing_pipeline.py
 """
 

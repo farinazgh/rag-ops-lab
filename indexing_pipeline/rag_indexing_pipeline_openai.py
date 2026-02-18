@@ -12,8 +12,6 @@ What it does:
 Prereq:
   export OPENAI_API_KEY="..."
 
-Run:
-  python rag_indexing_pipeline.py
 """
 
 from __future__ import annotations
