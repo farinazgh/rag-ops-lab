@@ -4,7 +4,7 @@ A minimal setup for experimenting with RAG (Retrieval-Augmented Generation) usin
 
 ---
 
-## 📦 Install dependencies
+## Install dependencies
 
 ### Option 1 — Install step by step
 
@@ -79,6 +79,12 @@ Saved embeddings + metadata to: /home/ubuntu/out
 
 
 ### Turn slow Python lists into a compact, fast numerical matrix suitable for large-scale vector math.
+
+```python
+
+    matrix = np.array(vectors, dtype=np.float32)
+```
+
 Python lists are slow for math.
 cosine similarity on thousands of embeddings:
 
