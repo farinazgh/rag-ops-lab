@@ -25,14 +25,11 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-# LangChain loaders + splitters
 from langchain_community.document_loaders import AsyncHtmlLoader
 from langchain_text_splitters import HTMLSectionSplitter
 from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 
-# OpenAI embeddings (LangChain wrapper)
 from langchain_openai import OpenAIEmbeddings
-
 
 # -------------------------
 # HARD-CODED CONFIG
@@ -81,8 +78,8 @@ TEXT_PREVIEW_CHARS = 140
 
 # Show embedding previews + stats
 PRINT_EMBEDDING_PREVIEW = True
-EMBED_PREVIEW_ROWS = 2       # how many chunk embeddings to preview
-EMBED_PREVIEW_DIMS = 20      # how many dimensions from each embedding
+EMBED_PREVIEW_ROWS = 2  # how many chunk embeddings to preview
+EMBED_PREVIEW_DIMS = 20  # how many dimensions from each embedding
 
 PRINT_EMBEDDING_STATS = True
 PRINT_SIMILARITY_CHECK = True  # cosine similarity between emb[0] and emb[1], if possible
@@ -110,10 +107,10 @@ def split_html_into_sections(html_doc, sections_to_split_on=None):
 
 
 def chunk_sections_recursively(
-    section_docs,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 100,
-    separators: Optional[List[str]] = None,
+        section_docs,
+        chunk_size: int = 1000,
+        chunk_overlap: int = 100,
+        separators: Optional[List[str]] = None,
 ):
     """Chunk section Documents into smaller Documents using RecursiveCharacterTextSplitter."""
     if separators is None:
@@ -129,10 +126,10 @@ def chunk_sections_recursively(
 
 
 def simple_character_chunks(
-    text: str,
-    chunk_size: int = 1000,
-    chunk_overlap: int = 200,
-    separator: str = "\n",
+        text: str,
+        chunk_size: int = 1000,
+        chunk_overlap: int = 200,
+        separator: str = "\n",
 ):
     """Simple character splitter working on a single text string."""
     text_splitter = CharacterTextSplitter(
@@ -167,32 +164,31 @@ def preview_chunks(chunks, idx: int):
 # -------------------------
 
 def embed_chunks_openai(
-    chunks,
-    model: str,
-    *,
-    verbose: bool = True,
-    print_text_preview: bool = True,
-    text_preview_rows: int = 2,
-    text_preview_chars: int = 140,
-    print_embedding_preview: bool = True,
-    embed_preview_rows: int = 2,
-    embed_preview_dims: int = 20,
-    print_stats: bool = True,
-    print_similarity_check: bool = True,
+        chunks,
+        model: str,
+        *,
+        verbose: bool = True,
+        print_text_preview: bool = True,
+        text_preview_rows: int = 2,
+        text_preview_chars: int = 140,
+        print_embedding_preview: bool = True,
+        embed_preview_rows: int = 2,
+        embed_preview_dims: int = 20,
+        print_stats: bool = True,
+        print_similarity_check: bool = True,
 ) -> Tuple[np.ndarray, int]:
     """
     Create OpenAI embeddings for chunk texts.
 
     Returns:
-      mat: shape (N, D) float32
-      dim: embedding dimension D
+      matrix: shape (N, D) float32
+      dimension: embedding dimension D
     """
     if not os.getenv("OPENAI_API_KEY"):
         raise RuntimeError("OPENAI_API_KEY not set. Example:\n  export OPENAI_API_KEY='...'")
 
     texts = [c.page_content for c in chunks]
 
-    # Graceful handling for empty input
     if len(texts) == 0:
         if verbose:
             print("[embed_chunks_openai] No chunks provided → returning empty matrix.")
@@ -214,44 +210,49 @@ def embed_chunks_openai(
     embedder = OpenAIEmbeddings(model=model)
 
     vectors = embedder.embed_documents(texts)  # list[list[float]]
-    mat = np.array(vectors, dtype=np.float32)
+    # Turn slow Python lists into a compact, fast numerical matrix suitable for large - scale vector math.
+    # Python lists → VERY slow loops
+    # NumPy arrays → fast C/compiled math
+    # Embeddings from OpenAI are already effectively 32-bit precision.
 
-    if mat.ndim != 2 or mat.shape[0] != len(texts):
-        raise RuntimeError(f"Unexpected embeddings shape: {mat.shape}")
+    matrix = np.array(vectors, dtype=np.float32)
 
-    dim = int(mat.shape[1])
+    if matrix.ndim != 2 or matrix.shape[0] != len(texts):
+        raise RuntimeError(f"Unexpected embeddings shape: {matrix.shape}")
+
+    dimension = int(matrix.shape[1])
 
     if verbose:
         print("[embed_chunks_openai] Embeddings created")
-        print(f"  Matrix shape: {mat.shape}  (N={mat.shape[0]}, D={mat.shape[1]})")
-        print(f"  dtype: {mat.dtype}")
+        print(f"  Matrix shape: {matrix.shape}  (N={matrix.shape[0]}, D={matrix.shape[1]})")
+        print(f"  dtype: {matrix.dtype}")
 
         # Make numpy printing nicer
         np.set_printoptions(precision=4, suppress=True)
 
         if print_embedding_preview:
-            rows_to_show = min(embed_preview_rows, mat.shape[0])
-            dims_to_show = min(embed_preview_dims, mat.shape[1])
+            rows_to_show = min(embed_preview_rows, matrix.shape[0])
+            dims_to_show = min(embed_preview_dims, matrix.shape[1])
 
             print("[embed_chunks_openai] Embedding preview (first rows / first dims):")
             for i in range(rows_to_show):
-                print(f"  - emb[{i}][: {dims_to_show}]: {mat[i, :dims_to_show]}")
+                print(f"  - emb[{i}][: {dims_to_show}]: {matrix[i, :dims_to_show]}")
 
         if print_stats:
             print("[embed_chunks_openai] Embedding stats:")
-            print(f"  min:  {mat.min():.6f}")
-            print(f"  max:  {mat.max():.6f}")
-            print(f"  mean: {mat.mean():.6f}")
-            print(f"  std:  {mat.std():.6f}")
+            print(f"  min:  {matrix.min():.6f}")
+            print(f"  max:  {matrix.max():.6f}")
+            print(f"  mean: {matrix.mean():.6f}")
+            print(f"  std:  {matrix.std():.6f}")
 
-        if print_similarity_check and mat.shape[0] >= 2:
-            v0, v1 = mat[0], mat[1]
+        if print_similarity_check and matrix.shape[0] >= 2:
+            v0, v1 = matrix[0], matrix[1]
             denom = (np.linalg.norm(v0) * np.linalg.norm(v1))
             cos_sim = float(np.dot(v0, v1) / denom) if denom != 0 else float("nan")
             print("[embed_chunks_openai] Cosine similarity sanity check:")
             print(f"  cos_sim(emb[0], emb[1]) = {cos_sim:.6f}")
 
-    return mat, dim
+    return matrix, dimension
 
 
 def save_embeddings(out_dir: Path, embeddings: np.ndarray, chunks, meta: dict):
@@ -335,7 +336,7 @@ def main():
 
         print(f"\nEmbedding {len(chunks_to_embed)} chunks with '{EMBED_MODEL}' ...")
 
-        emb_mat, dim = embed_chunks_openai(
+        emb_mat, dimension = embed_chunks_openai(
             chunks_to_embed,
             model=EMBED_MODEL,
             verbose=VERBOSE,
@@ -349,7 +350,7 @@ def main():
             print_similarity_check=PRINT_SIMILARITY_CHECK,
         )
 
-        print(f"Embedding dimension: {dim}")
+        print(f"Embedding dimension: {dimension}")
         print("*" * 60)
 
         # 6) Optional: save results
@@ -357,7 +358,7 @@ def main():
             meta = {
                 "url": URL,
                 "embed_model": EMBED_MODEL,
-                "embed_dim": dim,
+                "embed_dim": dimension,
                 "embed_source": EMBED_SOURCE,
                 "chunk_size": CHUNK_SIZE,
                 "chunk_overlap": CHUNK_OVERLAP,

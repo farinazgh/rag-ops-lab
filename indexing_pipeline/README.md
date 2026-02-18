@@ -25,7 +25,7 @@ export OPENAI_API_KEY="your-key-here"
 
 ---
 
-## 🧠 Embedding Example
+## Embedding Example
 
 ### Generate embeddings with OpenAI
 
@@ -76,3 +76,24 @@ Embedding 280 chunks with 'text-embedding-3-small' ...
 Embedding dimension: 1536
 ************************************************************
 Saved embeddings + metadata to: /home/ubuntu/out
+
+
+### Turn slow Python lists into a compact, fast numerical matrix suitable for large-scale vector math.
+Python lists are slow for math.
+cosine similarity on thousands of embeddings:
+
+Python lists → VERY slow loops
+
+NumPy arrays → fast C/compiled math
+
+| Type        | How math runs                   |
+| ----------- | ------------------------------- |
+| Python list | element-by-element in Python    |
+| NumPy array | optimized linear algebra engine |
+
+### Embeddings from OpenAI are already effectively 32-bit precision.
+
+| dtype   | Approx size |
+| ------- | ----------- |
+| float64 | ~1.2 GB     |
+| float32 | ~600 MB     |
