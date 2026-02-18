@@ -112,3 +112,11 @@ NumPy arrays → fast C/compiled math
 | ------- | ----------- |
 | float64 | ~1.2 GB     |
 | float32 | ~600 MB     |
+
+
+Running the `rag_faiss_indexing_pipeline.py` pipeline creates a local FAISS store:
+
+- `index.faiss` — binary vector index (embeddings only)
+- `index.pkl` — document store and metadata mapping
+
+Both files are required to reload the vector database and perform similarity search.
