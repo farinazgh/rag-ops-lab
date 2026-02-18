@@ -10,16 +10,25 @@ A minimal setup for experimenting with RAG (Retrieval-Augmented Generation) usin
 
 ```bash
 pip install numpy
+pip install faiss-cpu==1.10.0
+
 pip install langchain
 pip install langchain-community
 pip install langchain-text-splitters
 pip install langchain-openai
+
+pip install openai
+pip install tiktoken
+pip install pydantic
+
 pip install beautifulsoup4
 pip install lxml
 pip install aiohttp
-pip install openai
 
-export OPENAI_API_KEY="your-key-here"
+pip install python-dotenv   # optional
+
+
+export OPENAI_API_KEY=""
 
 ```
 
